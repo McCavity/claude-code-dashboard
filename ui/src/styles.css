@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface-2: #1a1a27;
+  --border: #2a2a3d;
+  --border-glow: #3d3d5c;
+  --text: #e8e8f0;
+  --text-dim: #8888a0;
+  --text-subtle: #5a5a70;
+  --accent-start: #4d7cff;
+  --accent-end: #8b5cf6;
+  --good: #10b981;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+  --info: #06b6d4;
+
+  font-family: "Inter", system-ui, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 18% 8%, rgba(77, 124, 255, 0.10), transparent 42%),
+    radial-gradient(circle at 84% 78%, rgba(139, 92, 246, 0.08), transparent 48%);
+  background-attachment: fixed;
+  color: var(--text);
+}
+
+/* Hairline scrollbars to match the dark theme. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-glow) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--border-glow); }
+
+/* Kicker labels — uppercase mono caps used for section titles. */
+.kicker {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+}
+
+/* Number columns: tabular numerals so columns line up. */
+.numeric {
+  font-feature-settings: "tnum", "lnum";
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Focus ring used everywhere instead of the default browser ring. */
+:focus-visible {
+  outline: 2px solid var(--accent-start);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Skeleton shimmer block. Used by panels while data loads — never spinners. */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shine 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+@keyframes skeleton-shine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Rendered by install.sh. Placeholders:
+    {{PYTHON}}        absolute path to the venv's python
+    {{INSTALL_DIR}}   ~/.command-centre (or wherever install.sh landed)
+    {{HEARTBEAT}}     {{INSTALL_DIR}}/.claude/skills/mission-control/heartbeat.py
+    {{LOG_DIR}}       {{INSTALL_DIR}}/logs
+    {{DEFAULT_MODEL}} default Claude model for unattached tasks
+
+  Do NOT hardcode /usr/bin/python3 — that's macOS' bundled 3.9 and our
+  modules use 3.10+ syntax in places.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.commandcentre.mission-control</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>{{PYTHON}}</string>
+    <string>{{HEARTBEAT}}</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>{{INSTALL_DIR}}</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>{{PATH}}</string>
+    <key>HOME</key>
+    <string>{{HOME}}</string>
+    <key>CC_DATA_DIR</key>
+    <string>{{INSTALL_DIR}}/data</string>
+    <key>MISSION_CONTROL_DEFAULT_MODEL</key>
+    <string>{{DEFAULT_MODEL}}</string>
+    <key>CC_LOG_LEVEL</key>
+    <string>info</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>{{LOG_DIR}}/mission-control.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>{{LOG_DIR}}/mission-control.err.log</string>
+</dict>
+</plist>

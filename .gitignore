@@ -1,0 +1,38 @@
+# Runtime data — lives in ~/.command-centre/data/, not in repo
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.local
+
+# Node / Vite
+node_modules/
+ui/dist/
+.vite/
+
+# TypeScript build artefacts (tsc -b incremental cache + emitted JS for
+# vite.config.ts due to composite: true in tsconfig.node.json).
+*.tsbuildinfo
+ui/vite.config.d.ts
+ui/vite.config.js
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*~
+
+# Backups created by setup_otel.py / install.sh
+*.bak.*

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Rendered by install.sh. Placeholders:
+    {{INSTALL_DIR}}   ~/.command-centre
+    {{LOG_DIR}}       {{INSTALL_DIR}}/logs
+    {{PATH}}          launchd PATH (claude CLI dir prepended)
+    {{HOME}}          $HOME
+
+  Runs the FastAPI dashboard server through start.sh, which sources
+  config + .env. KeepAlive=true so the server respawns on crash;
+  ThrottleInterval=30 prevents respawn loops on a config bug.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.commandcentre.server</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>{{INSTALL_DIR}}/start.sh</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>{{INSTALL_DIR}}</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>{{PATH}}</string>
+    <key>HOME</key>
+    <string>{{HOME}}</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>{{LOG_DIR}}/server.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>{{LOG_DIR}}/server.err.log</string>
+</dict>
+</plist>
