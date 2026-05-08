@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Activity, Boxes, Command as CommandIcon, Sparkles } from "lucide-react";
+import { Activity, Boxes, Command as CommandIcon, Compass } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { cn } from "@/lib/cn";
 
@@ -14,17 +14,22 @@ export function AppShell({ onOpenPalette, children }: PropsWithChildren<{ onOpen
 
   return (
     <div className="min-h-full">
-      <header className="sticky top-0 z-30 border-b border-border bg-bg/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-border bg-bg">
         <div className="mx-auto max-w-[1480px] flex items-center gap-6 px-6 py-3">
           <Link
             to="/"
-            className="flex items-center gap-2 text-text font-semibold tracking-tight"
+            className="flex items-center gap-2.5 text-text-heading"
             aria-label="Command Centre"
           >
-            <span className="size-7 rounded-lg bg-gradient-accent inline-flex items-center justify-center shadow-glow">
-              <Sparkles className="size-4 text-white" />
+            <span
+              className="size-8 rounded-md inline-flex items-center justify-center bg-surface border border-border-glow"
+              aria-hidden
+            >
+              <Compass className="size-4 text-warm" strokeWidth={1.5} />
             </span>
-            <span className="text-sm">Command Centre</span>
+            <span className="font-display italic text-[18px] leading-none">
+              Command Centre
+            </span>
           </Link>
           <nav className="flex items-center gap-1" aria-label="Primary">
             {NAV.map((item) => {
@@ -34,9 +39,9 @@ export function AppShell({ onOpenPalette, children }: PropsWithChildren<{ onOpen
                   key={item.to}
                   to={item.to}
                   className={cn(
-                    "flex items-center gap-2 px-3 h-9 text-sm rounded-md",
+                    "flex items-center gap-2 px-3 h-9 text-sm rounded transition-colors duration-150 ease-vuz-out",
                     active
-                      ? "bg-surface-2 text-text border border-border"
+                      ? "bg-surface-2 text-text-heading border border-border"
                       : "text-text-dim hover:text-text hover:bg-surface-2/60",
                   )}
                 >
@@ -50,10 +55,10 @@ export function AppShell({ onOpenPalette, children }: PropsWithChildren<{ onOpen
             <button
               type="button"
               onClick={onOpenPalette}
-              className="flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-surface text-text-dim hover:text-text hover:border-border-glow text-xs"
+              className="flex items-center gap-2 h-9 px-3 rounded border border-border bg-surface text-text-dim hover:text-text hover:border-border-glow text-xs transition-colors duration-150 ease-vuz-out"
             >
               <span>Press</span>
-              <kbd className="font-mono px-1.5 py-0.5 rounded bg-surface-2 border border-border text-[10px]">⌘K</kbd>
+              <kbd className="font-mono px-1.5 py-0.5 rounded-sm bg-surface-2 border border-border text-[10px]">⌘K</kbd>
               <span>to jump</span>
             </button>
           </div>
@@ -61,7 +66,7 @@ export function AppShell({ onOpenPalette, children }: PropsWithChildren<{ onOpen
       </header>
       <main className="mx-auto max-w-[1480px] px-6 py-6">{children}</main>
       <footer className="px-6 py-6 text-xs text-text-subtle text-center">
-        Local. No cloud. {new Date().toLocaleDateString()}
+        Local · No cloud · {new Date().toLocaleDateString()}
       </footer>
     </div>
   );

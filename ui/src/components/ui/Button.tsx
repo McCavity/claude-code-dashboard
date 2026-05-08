@@ -12,12 +12,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANT: Record<Variant, string> = {
   primary:
-    "text-white bg-gradient-accent shadow-md hover:shadow-glow active:translate-y-px",
+    "text-text-heading bg-info shadow-paper hover:bg-accent-start hover:text-bg active:translate-y-px",
   secondary:
     "text-text bg-surface-2 border border-border hover:border-border-glow",
   ghost: "text-text-dim hover:text-text hover:bg-surface-2",
   danger:
-    "text-white bg-bad/90 hover:bg-bad shadow-md active:translate-y-px",
+    "text-text-heading bg-bad/90 hover:bg-bad shadow-paper active:translate-y-px",
 };
 
 const SIZE: Record<Size, string> = {
@@ -40,9 +40,9 @@ export function Button({
       type="button"
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-medium",
-        "transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-start",
+        "inline-flex items-center justify-center gap-2 rounded font-medium",
+        "transition-colors duration-150 ease-vuz-out disabled:opacity-50 disabled:cursor-not-allowed",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-info",
         VARIANT[variant],
         SIZE[size],
         className,

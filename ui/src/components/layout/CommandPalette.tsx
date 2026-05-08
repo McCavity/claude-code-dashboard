@@ -102,7 +102,7 @@ export function CommandPalette({ open, onClose, onQueueTask }: CommandPalettePro
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-[rgba(21,44,69,0.55)]"
             onClick={onClose}
             aria-hidden
           />
@@ -116,7 +116,7 @@ export function CommandPalette({ open, onClose, onQueueTask }: CommandPalettePro
             transition={{ duration: 0.18 }}
             className="fixed left-1/2 top-[18vh] z-50 -translate-x-1/2 w-full max-w-xl px-4"
           >
-            <div className="rounded-2xl border border-border bg-surface shadow-glow overflow-hidden">
+            <div className="rounded-lg border border-border-glow bg-surface shadow-floating overflow-hidden">
               <div className="flex items-center gap-3 px-4 h-12 border-b border-border">
                 <Search className="size-4 text-text-subtle" />
                 <input

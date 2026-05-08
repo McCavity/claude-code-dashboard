@@ -2,26 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =====================================================================
+   Dashboard theme · VuZ-derived (Verklemmt und zugenäht!)
+   Dark mode = role-swap, never invert. Tiefsee replaces black.
+   ===================================================================== */
+
 :root {
-  --bg: #0a0a0f;
-  --surface: #12121a;
-  --surface-2: #1a1a27;
-  --border: #2a2a3d;
-  --border-glow: #3d3d5c;
-  --text: #e8e8f0;
-  --text-dim: #8888a0;
-  --text-subtle: #5a5a70;
-  --accent-start: #4d7cff;
-  --accent-end: #8b5cf6;
-  --good: #10b981;
-  --warn: #f59e0b;
-  --bad: #ef4444;
-  --info: #06b6d4;
+  /* VuZ source palette */
+  --kartenpapier: #F5F0E8;
+  --altes-papier: #E8E0CC;
+  --tiefwasser:   #1B3A5C;
+  --kuestenblau:  #3A7CA5;
+  --flachwasser:  #7FB5B0;
+  --gefahrenmark: #C0392B;
+  --kompassrose:  #B8860B;
+  --tiefsee:      #152C45;
+  --vergilbt:     #D8D0BC;
+
+  /* Semantic — dark role-swap is the dashboard default */
+  --bg:           var(--tiefsee);
+  --surface:      var(--tiefwasser);
+  --surface-2:    #20446A;            /* Tiefwasser, slight lift for nested rows */
+  --border:       rgba(245, 240, 232, 0.12);
+  --border-glow:  rgba(245, 240, 232, 0.28);
+  --text:         var(--vergilbt);
+  --text-dim:     var(--flachwasser);
+  --text-subtle:  rgba(216, 208, 188, 0.55);
+  --text-heading: var(--kartenpapier);
+  --warm:         var(--kompassrose);
+
+  --accent-start: var(--flachwasser);
+  --accent-end:   var(--kuestenblau);
+
+  --good: var(--flachwasser);
+  --warn: var(--kompassrose);
+  --bad:  var(--gefahrenmark);
+  --info: var(--kuestenblau);
 
   font-family: "Inter", system-ui, sans-serif;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
   color-scheme: dark;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 html, body, #root {
@@ -31,53 +53,71 @@ html, body, #root {
 body {
   margin: 0;
   background-color: var(--bg);
+  /* Blueprint grid overlay — sparse, low-opacity, only as page texture. */
   background-image:
-    radial-gradient(circle at 18% 8%, rgba(77, 124, 255, 0.10), transparent 42%),
-    radial-gradient(circle at 84% 78%, rgba(139, 92, 246, 0.08), transparent 48%);
+    linear-gradient(rgba(245, 240, 232, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 240, 232, 0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
   background-attachment: fixed;
   color: var(--text);
 }
 
-/* Hairline scrollbars to match the dark theme. */
+/* Hairline scrollbars in the dark theme. */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border-glow) transparent;
 }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+*::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 *::-webkit-scrollbar-thumb:hover { background: var(--border-glow); }
 
-/* Kicker labels — uppercase mono caps used for section titles. */
+/* Kicker labels — VuZ spec: Inter Medium 500, uppercase, ls .09em.
+   Replaces the old JetBrains Mono kicker style. */
 .kicker {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "Inter", system-ui, sans-serif;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.09em;
   color: var(--text-dim);
 }
 
-/* Number columns: tabular numerals so columns line up. */
+/* Display headings — Fraunces Italic only (VuZ non-negotiable). */
+.display, .font-display {
+  font-family: "Fraunces", "Libre Caslon Text", ui-serif, Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  font-variation-settings: "opsz" 36;
+}
+
+/* Tabular numerals so number columns line up. */
 .numeric {
   font-feature-settings: "tnum", "lnum";
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* Focus ring used everywhere instead of the default browser ring. */
+/* Focus ring — Küstenblau, matches VuZ rule. */
 :focus-visible {
-  outline: 2px solid var(--accent-start);
+  outline: 2px solid var(--kuestenblau);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
-/* Skeleton shimmer block. Used by panels while data loads — never spinners. */
+/* Skeleton shimmer — calm, no rainbow. */
 .skeleton {
   background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%);
   background-size: 200% 100%;
   animation: skeleton-shine 1.4s ease-in-out infinite;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 @keyframes skeleton-shine {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+/* Selection — VuZ uses Kompassrose for highlight. */
+::selection {
+  background: var(--kompassrose);
+  color: var(--kartenpapier);
 }

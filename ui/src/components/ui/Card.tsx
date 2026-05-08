@@ -10,9 +10,9 @@ export function Card({ className, interactive, ...rest }: PropsWithChildren<Card
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-surface shadow-card animate-fade-in",
+        "rounded-lg border border-border bg-surface shadow-paper animate-fade-in",
         "px-6 py-5",
-        interactive && "transition-shadow duration-200 hover:shadow-glow",
+        interactive && "transition-shadow duration-200 ease-vuz-out hover:shadow-card",
         className,
       )}
       {...rest}
@@ -32,7 +32,10 @@ export function CardHeader({ className, ...rest }: HTMLAttributes<HTMLDivElement
 export function CardTitle({ className, ...rest }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn("text-base font-semibold text-text", className)}
+      className={cn(
+        "font-display italic text-[22px] leading-[1.15] text-text-heading",
+        className,
+      )}
       {...rest}
     />
   );
