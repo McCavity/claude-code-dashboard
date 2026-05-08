@@ -412,7 +412,9 @@ def _execute_stream(
     parser = _MarkerParser()
     summary_parts: list[str] = []
     session_id_for_task: str | None = None
-    queue_file = _queue_root() / f"{task['id']}__followup.jsonl"
+    # Follow-up queue is session-keyed (matches API writers + ARCHITECTURE.md).
+    # Computed lazily once Claude reports its session_id via the init event.
+    queue_file: Path | None = None
     followup_offset = 0
     decisions_in_flight: set[int] = set()
 
@@ -439,6 +441,8 @@ def _execute_stream(
                     sid = event.get("session_id")
                     if sid:
                         session_id_for_task = sid
+                        if queue_file is None:
+                            queue_file = _queue_root() / f"{sid}.jsonl"
                         try:
                             conn = conn_factory()
                             try:
@@ -487,8 +491,8 @@ def _execute_stream(
                                             conn.close()
                                     except Exception:  # noqa: BLE001
                                         log.exception("marker handling failed")
-            # Poll user follow-up queue file.
-            if queue_file.exists():
+            # Poll user follow-up queue file (only after session_id is known).
+            if queue_file is not None and queue_file.exists():
                 try:
                     size = queue_file.stat().st_size
                     if size > followup_offset:

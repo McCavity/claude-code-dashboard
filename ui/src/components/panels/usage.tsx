@@ -194,64 +194,87 @@ export function CacheEfficiencyCard() {
 }
 
 function Sparkline({ points, target }: { points: number[]; target: number }) {
-  const w = 100; // viewBox width
-  const h = 36;
-  const path = points
-    .map((p, i) => {
-      const x = (i / Math.max(1, points.length - 1)) * w;
-      const y = h - p * h;
-      return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
+  const W = 600;
+  const H = 120;
+  const PAD = 8;
+
+  if (points.length === 0) return null;
+
+  const minVal = Math.min(...points, target);
+  const maxVal = Math.max(...points, target);
+  const span = Math.max(maxVal - minVal, 0.05);
+  const yMin = Math.max(0, minVal - span * 0.2);
+  const yMax = Math.min(1, maxVal + span * 0.2);
+
+  const xAt = (i: number) => PAD + (i / Math.max(1, points.length - 1)) * (W - 2 * PAD);
+  const yAt = (v: number) => PAD + ((yMax - v) / (yMax - yMin)) * (H - 2 * PAD);
+
+  const linePath = points
+    .map((p, i) => `${i === 0 ? "M" : "L"}${xAt(i).toFixed(1)} ${yAt(p).toFixed(1)}`)
     .join(" ");
-  const targetY = h - target * h;
+
+  const areaPath =
+    `${linePath} L${xAt(points.length - 1).toFixed(1)} ${(H - PAD).toFixed(1)} ` +
+    `L${xAt(0).toFixed(1)} ${(H - PAD).toFixed(1)} Z`;
+
+  const targetY = yAt(target);
+  const lastVal = points[points.length - 1];
+
   return (
     <svg
-      viewBox={`0 0 ${w} ${h}`}
+      viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="none"
-      className="mt-3 w-full h-16"
+      className="mt-3 w-full h-24"
       role="img"
-      aria-label="Cache hit-rate trend"
+      aria-label={`Cache hit-rate trend; latest ${(lastVal * 100).toFixed(0)}%, target ${(target * 100).toFixed(0)}%`}
     >
-      <line
-        x1={0}
-        x2={w}
-        y1={targetY}
-        y2={targetY}
-        strokeDasharray="2 2"
-        stroke="currentColor"
-        className="text-good/40"
-        strokeWidth={0.6}
-      />
-      <path d={path} fill="none" stroke="currentColor" strokeWidth={1.6} className="text-accent-start" />
-      {points.length > 0 ? (
-        <circle
-          cx={w}
-          cy={h - points[points.length - 1] * h}
-          r={1.6}
-          className="text-accent-start"
-          fill="currentColor"
-        />
-      ) : null}
-      <rect
-        x={0}
-        y={0}
-        width={w}
-        height={h}
-        fill="url(#cache-grad)"
-        opacity={0.16}
-      />
       <defs>
         <linearGradient id="cache-grad" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="currentColor" className="text-accent-start" />
-          <stop offset="100%" stopColor="transparent" />
+          <stop offset="0%" stopColor="currentColor" className="text-accent-start" stopOpacity={0.28} />
+          <stop offset="100%" stopColor="currentColor" className="text-accent-start" stopOpacity={0} />
         </linearGradient>
       </defs>
+
+      <path d={areaPath} fill="url(#cache-grad)" stroke="none" />
+
+      <line
+        x1={PAD}
+        x2={W - PAD}
+        y1={targetY}
+        y2={targetY}
+        stroke="currentColor"
+        strokeDasharray="6 4"
+        strokeWidth={1}
+        className="text-good/55"
+        vectorEffect="non-scaling-stroke"
+      />
+
+      <path
+        d={linePath}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="text-accent-start"
+        vectorEffect="non-scaling-stroke"
+      />
+
+      <circle
+        cx={xAt(points.length - 1)}
+        cy={yAt(lastVal)}
+        r={3.5}
+        fill="currentColor"
+        className="text-accent-start"
+      />
+
       <text
-        x={2}
-        y={h - target * h - 1}
-        className="fill-good text-[3px] font-mono"
+        x={PAD + 2}
+        y={targetY - 4}
+        className="fill-good font-mono"
+        style={{ fontSize: 10 }}
       >
-        {(target * 100).toFixed(0)}%
+        target {(target * 100).toFixed(0)}%
       </text>
     </svg>
   );
