@@ -4,6 +4,9 @@ data/
 *.db-shm
 *.db-wal
 
+# Worktrees (isolierte Feature-Arbeit)
+.worktrees/
+
 # Python
 __pycache__/
 *.py[cod]
