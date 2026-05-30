@@ -31,6 +31,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from scripts._csrf import csrf_origin_guard
 from scripts.api_ops import router as ops_router
 from scripts.api_query import router as query_router
 from scripts.api_system import router as system_router
@@ -116,6 +117,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# CSRF: block cross-origin state-changing requests. CORS above only governs
+# response readability — it does not stop a foreign page from *triggering*
+# our unauthenticated mutating endpoints. See scripts/_csrf.py.
+app.middleware("http")(csrf_origin_guard)
 
 app.include_router(query_router)
 app.include_router(ops_router)
