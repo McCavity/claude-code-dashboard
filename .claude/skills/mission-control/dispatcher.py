@@ -40,6 +40,7 @@ from scripts.db import connect  # noqa: E402
 
 import task_tracker  # noqa: E402  (sibling)
 import skill_router  # noqa: E402  (sibling)
+from claude_invocation import classic_cmd  # noqa: E402  (sibling)
 
 log = logging.getLogger("commandcentre.dispatcher")
 
@@ -350,13 +351,14 @@ def _reader(stream, q: queue.Queue) -> None:
 def _execute_classic(
     task: dict[str, Any], prompt: str, model: str
 ) -> tuple[bool, str, int | None]:
-    cmd = [_claude_bin(), "-p", prompt, "--model", model, "--output-format", "text"]
+    # Prompt is fed via stdin, never argv, to avoid a ps/cmdline leak.
+    cmd = classic_cmd(_claude_bin(), model)
     env = _build_env(model)
     timeout = _task_timeout()
     started = time.monotonic()
     try:
         proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             env=env, text=True, start_new_session=True,
         )
     except FileNotFoundError:
@@ -364,7 +366,7 @@ def _execute_classic(
 
     _mark_child_pid(proc.pid)
     try:
-        stdout, stderr = proc.communicate(timeout=timeout)
+        stdout, stderr = proc.communicate(input=prompt, timeout=timeout)
     except subprocess.TimeoutExpired:
         proc.kill()
         try:
@@ -387,6 +389,12 @@ def _execute_classic(
 def _execute_stream(
     conn_factory, task: dict[str, Any], prompt: str, model: str
 ) -> tuple[bool, str, int | None]:
+    # NOTE: this stream path is pre-existing and currently non-functional --
+    # `claude --print --output-format=stream-json` refuses to run without
+    # `--verbose`, and even with it, holding stdin open (for follow-ups) means
+    # claude never exits, so this loop times out. Moving the prompt off argv
+    # (the argv-leak fix) is entangled with that redesign, so it is handled
+    # separately. The classic path below is fixed. See the follow-up loop.
     cmd = [
         _claude_bin(), "-p", prompt, "--model", model,
         "--output-format", "stream-json",
