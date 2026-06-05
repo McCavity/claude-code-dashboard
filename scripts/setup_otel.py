@@ -26,9 +26,19 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+# Honor a non-default dashboard port (CC_PORT / install.sh --port) so the
+# wizard never writes a stale localhost:8765 endpoint that telemetry then
+# silently drains into. Computed before the dict literal — a literal can't
+# hold the dynamic value.
+_OTEL_PORT = os.environ.get("CC_PORT", "8765")
+_OTEL_ENDPOINT = (
+    os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT")
+    or f"http://localhost:{_OTEL_PORT}"
+)
+
 REQUIRED_KEYS: dict[str, str] = {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:8765",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": _OTEL_ENDPOINT,
     "OTEL_EXPORTER_OTLP_PROTOCOL": "http/json",
     "OTEL_METRICS_EXPORTER": "otlp",
     "OTEL_LOGS_EXPORTER": "otlp",

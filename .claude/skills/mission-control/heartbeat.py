@@ -48,7 +48,8 @@ def _materialize_schedules(conn: sqlite3.Connection) -> int:
                    assigned_skill
               FROM ops_schedules
              WHERE enabled = 1
-               AND (next_run_at IS NULL OR next_run_at <= ?)
+               AND ((next_run_at IS NULL AND last_run_at IS NULL)
+                    OR next_run_at <= ?)
             """,
             (now_iso(),),
         ).fetchall()
@@ -73,10 +74,37 @@ def _materialize_schedules(conn: sqlite3.Connection) -> int:
                 ).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             except Exception:  # noqa: BLE001
                 next_run = None
-            conn.execute(
-                "UPDATE ops_schedules SET next_run_at = ?, last_run_at = ? WHERE id = ?",
-                (next_run, now_iso(), r["id"]),
-            )
+            if next_run is None:
+                # Broken or never-matching cron: disable the schedule so it
+                # can't re-materialize a task on every tick, and record why
+                # in the activity log (otherwise it looks like the schedule
+                # silently vanished).
+                conn.execute(
+                    "UPDATE ops_schedules SET enabled = 0, last_run_at = ? WHERE id = ?",
+                    (now_iso(), r["id"]),
+                )
+                conn.execute(
+                    """
+                    INSERT INTO activities (event_type, detail, metadata, created_at)
+                    VALUES ('schedule_disabled', ?, ?, ?)
+                    """,
+                    (
+                        f"schedule {r['id']} ({r['name']}) auto-disabled: "
+                        f"cron {r['cron_expression']!r} has no next run",
+                        json.dumps(
+                            {
+                                "schedule_id": r["id"],
+                                "cron_expression": r["cron_expression"],
+                            }
+                        ),
+                        now_iso(),
+                    ),
+                )
+            else:
+                conn.execute(
+                    "UPDATE ops_schedules SET next_run_at = ?, last_run_at = ? WHERE id = ?",
+                    (next_run, now_iso(), r["id"]),
+                )
             materialised += 1
         conn.execute("COMMIT")
     except Exception:

@@ -99,7 +99,10 @@ export function LiveSessionDetail({ sessionId, onClose }: DetailProps) {
   const open = sessionId !== null;
   const { sendLiveMessage } = useSystemMutations();
   const [followup, setFollowup] = useState("");
-  const isStream = data?.session.execution_mode === "stream"; // populated by dispatcher
+  // Live sessions don't carry an execution_mode (it isn't synced into the
+  // sessions table), so the stream-only follow-up affordance stays disabled.
+  // Wire this up if/when live stream sessions are actually distinguished.
+  const isStream = false;
 
   return (
     <Sheet

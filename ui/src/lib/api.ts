@@ -386,7 +386,6 @@ export interface LiveSessionRow {
   live_state: string | null;
   live_current_tool: string | null;
   live_updated_at: string | null;
-  execution_mode: string | null;
 }
 
 export interface LiveSessions {
