@@ -392,7 +392,6 @@ def sessions_live() -> dict[str, Any]:
     items = []
     for r in rows:
         d = dict(r)
-        d["execution_mode"] = None  # populated by the dispatcher when known
         items.append(d)
     return {"items": items}
 

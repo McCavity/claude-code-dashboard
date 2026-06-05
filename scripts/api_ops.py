@@ -499,6 +499,18 @@ def _next_run(cron_expr: str) -> str | None:
         return None
 
 
+def _validate_cron(cron_expr: str) -> None:
+    """Reject an unparseable or never-matching cron up front (HTTP 422).
+
+    Without this a schedule can be stored with a next_run_at that stays
+    NULL forever, which the heartbeat treats as "due now" and re-spawns a
+    task on every tick."""
+    try:
+        parse_cron_simple(cron_expr)
+    except ValueError as exc:
+        raise HTTPException(422, f"invalid cron_expression: {exc}") from exc
+
+
 @router.get("/api/schedules")
 def list_schedules() -> dict[str, Any]:
     with get_db() as conn:
@@ -516,6 +528,7 @@ def list_schedules() -> dict[str, Any]:
 
 @router.post("/api/schedules")
 def create_schedule(payload: ScheduleCreate) -> dict[str, Any]:
+    _validate_cron(payload.cron_expression)
     next_run = _next_run(payload.cron_expression) if payload.enabled else None
     with get_db() as conn:
         cur = conn.execute(
@@ -548,6 +561,7 @@ def update_schedule(schedule_id: int, payload: ScheduleUpdate) -> dict[str, Any]
         else:
             fields[col] = val
     if "cron_expression" in fields:
+        _validate_cron(fields["cron_expression"])
         # Force recompute of next_run_at on cron change.
         fields["next_run_at"] = _next_run(fields["cron_expression"])
     if not fields:

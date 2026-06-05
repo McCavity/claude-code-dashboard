@@ -197,7 +197,10 @@ def _build_env(model: str) -> dict[str, str]:
     # Forward telemetry settings so the dispatched session lights up the
     # dashboard the same way an interactive one does.
     env.setdefault("CLAUDE_CODE_ENABLE_TELEMETRY", "1")
-    env.setdefault("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:8765")
+    _otel_port = env.get("CC_PORT", "8765")
+    env.setdefault(
+        "OTEL_EXPORTER_OTLP_ENDPOINT", f"http://localhost:{_otel_port}"
+    )
     env.setdefault("OTEL_EXPORTER_OTLP_PROTOCOL", "http/json")
     env.setdefault("OTEL_METRICS_EXPORTER", "otlp")
     env.setdefault("OTEL_LOGS_EXPORTER", "otlp")
